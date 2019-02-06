@@ -4,8 +4,6 @@
 
     run with:
             ./lex input.c output.txt
-
-            (output not used yet)
 */
 
 #include <stdio.h>
@@ -32,8 +30,8 @@ int isKeyword(char buf[]){
 struct token_t create_token(int type, int linenum, int num, char *ID){
     struct token_t token;
     
-    if(type == T_KEY){
-        token.type = T_KEY;
+    if(type == T_KEY || T_ID){
+        token.type = type;
         token.lineNumber = linenum;
         token.num = 0;
         token.ID = ID;
@@ -45,7 +43,9 @@ struct token_t create_token(int type, int linenum, int num, char *ID){
 int printToken(FILE *ofp, struct token_t token){
     if(token.type == T_KEY)
         fprintf(ofp, "(%d,KEY,\"%s\")\n", token.lineNumber, token.ID);
-    
+    else if(token.type == T_ID)
+        fprintf(ofp, "(%d,ID,\"%s\")\n", token.lineNumber, token.ID);
+
     return 1;
 }
 
@@ -87,14 +87,13 @@ int main(int argc, char *argv[]){
             }while(isalnum(c));
             buf[i] = '\0';
             
-            if(isKeyword(buf)){
-                //printf("linenum: %d   keyword: %s\n", linenum, buf);
-
-                struct token_t token;
+            struct token_t token;
+            if(isKeyword(buf))
                 token = create_token(T_KEY, linenum, 0, buf);
-           
-                printToken(ofp, token);
-            } 
+            else // string that is not keyword
+                token = create_token(T_ID, linenum, 0, buf);
+            printToken(ofp, token);
+            continue;    
         }
     }
 
