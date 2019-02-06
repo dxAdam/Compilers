@@ -1,3 +1,13 @@
+/*
+    compile with: 
+            make
+
+    run with:
+            ./lex input.c output.txt
+
+            (output not used yet)
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
