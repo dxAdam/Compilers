@@ -16,7 +16,6 @@
 int isKeyword(char buf[]){
     extern char *keywords[];
 
-    //printf("buf: %s\n", buf);
     int i = 0;
     while(keywords[i++] != "\0"){
         if(strcmp(keywords[i], buf) == 0){
@@ -27,25 +26,40 @@ int isKeyword(char buf[]){
     return 0; 
 }
 
+int isSpecialSym(char buf[]){
+    extern char *special_symbols[];
+
+    int i = 0;
+    while(special_symbols[i++] != "\0"){
+        if(strcmp(special_symbols[i], buf) == 0){
+            return 1;
+        }
+    }
+    return 0;
+}
+
 struct token_t create_token(int type, int linenum, int num, char *ID){
     struct token_t token;
-    
+
     if(type == T_KEY || T_ID){
         token.type = type;
         token.lineNumber = linenum;
         token.num = 0;
         token.ID = ID;
     }
-
     return token;
 }
 
 int printToken(FILE *ofp, struct token_t token){
-    if(token.type == T_KEY)
+    if(token.type == T_KEY){
         fprintf(ofp, "(%d,KEY,\"%s\")\n", token.lineNumber, token.ID);
-    else if(token.type == T_ID)
+        printf("(%d,KEY,\"%s\")\n", token.lineNumber, token.ID);
+    }
+    else if(token.type == T_ID){
         fprintf(ofp, "(%d,ID,\"%s\")\n", token.lineNumber, token.ID);
+        printf("(%d,ID,\"%s\")\n", token.lineNumber, token.ID);
 
+    }
     return 1;
 }
 
