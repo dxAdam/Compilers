@@ -29,7 +29,25 @@ int isKeyword(char buf[]){
     return 0; 
 }
 
+struct token_t create_token(int type, int linenum, int num, char *ID){
+    struct token_t token;
+    
+    if(type == T_KEY){
+        token.type = T_KEY;
+        token.lineNumber = linenum;
+        token.num = 0;
+        token.ID = ID;
+    }
 
+    return token;
+}
+
+int printToken(FILE *ofp, struct token_t token){
+    if(token.type == T_KEY)
+        fprintf(ofp, "(%d,KEY,\"%s\")\n", token.lineNumber, token.ID);
+    
+    return 1;
+}
 
 int main(int argc, char *argv[]){
 
@@ -39,16 +57,23 @@ int main(int argc, char *argv[]){
         return 1; // final version will exit here
     }
 
-    FILE *fp; 
+    FILE *ifp; 
+    FILE *ofp;
     
-    if(!(fp = fopen(argv[1], "r"))) {
+    if(!(ifp = fopen(argv[1], "r"))) {
         printf("Error opening file\n");
+        return 1;
+    }
+    else if(!(ofp = fopen(argv[2], "w+"))){
+        printf("Error preparing output file\n");
         return 1;
     }
     
     char buf[256]; 
+    int linenum = 1;
     int c;
-    while((c = fgetc(fp)) != EOF){
+    while((c = fgetc(ifp)) != EOF){
+        if(c == '\n') linenum++;
         //printf("%d  %c  %d\n", c, c, isalnum(c));
 
         // if uppercase or lowercase letter
@@ -56,21 +81,25 @@ int main(int argc, char *argv[]){
             int i=0;
             do{
                 buf[i++] = (char)c;
-                c = fgetc(fp);
+                c = fgetc(ifp);
                 //printf("%d  %c  %d\n", c, c, isalnum(c));
 
             }while(isalnum(c));
             buf[i] = '\0';
-
+            
             if(isKeyword(buf)){
-                printf("found keyword: %s\n", buf);
-            }
+                //printf("linenum: %d   keyword: %s\n", linenum, buf);
+
+                struct token_t token;
+                token = create_token(T_KEY, linenum, 0, buf);
+           
+                printToken(ofp, token);
+            } 
         }
-
-
     }
 
-    fclose(fp);
+    fclose(ifp);
+    fclose(ofp);
     printf("\nnormal exit\n");
     return 0;
 }
