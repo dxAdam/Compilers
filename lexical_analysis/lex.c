@@ -7,7 +7,7 @@ int main(int argc, char *argv[]){
     if(argc < 3) {
         printf("file names not detected!\n");
         printf("usage: ./lex <input file> <output file>\n");
-        // return 1; // final version will exit here
+        return 1; // final version will exit here
     }
 
     FILE *fp; 
@@ -17,17 +17,11 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    char *line = NULL;
-    size_t len;
-    size_t read;
+    int c;
+    while((c = fgetc(fp)) != EOF){
+        printf("%c", c);
+    }
 
-    while(getc)
-
-
-
-
-
-
-    fclose(fp);
+    //fclose(fp);
     return 0;
 }
