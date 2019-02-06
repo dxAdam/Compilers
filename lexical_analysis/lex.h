@@ -43,15 +43,14 @@
 #define S_NEWLINE =           10
 #define S_TAB =               9
 
-// may not need this
 char *keywords[] = {"else",   "if",   "int",
-                    "return", "void", "while"};
+                    "return", "void", "while", "\0"};
+                                            // "\0" marks end of arrays
 
-// may not need this
 char *special_symbols[] = {"+",  "-",  "*",  "/",  "<",  "<=",
                            ">",  ">=", "==", "!=", "=",  ";",
                            ",",  "(",  ")",  "[",  "]",  "{", 
-                           "}",  "/*", "*/"};
+                           "}",  "/*", "*/", "\0"};
 
 struct token_t {
     int type;
@@ -59,3 +58,5 @@ struct token_t {
     int num;      // digit digit*
     char ID[256]; // lettter(letter|digit)*
 };
+
+int isKeyword(char buf[]);
