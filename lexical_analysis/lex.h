@@ -6,6 +6,8 @@
                     A-Z       65-90
                     a-z       97-122         
 */
+
+// we might not need these
 #define S_PLUS                '+'
 #define S_HYPHEN              '-'
 #define S_ASTERISK            '*'
@@ -67,4 +69,8 @@ struct token_t {
     char *ID; // lettter(letter|digit)*
 };
 
+// function prototypes
 int isKeyword(char buf[]);
+int isSpecialSym(char buf[]);
+struct token_t create_token(int type, int linenum, int num, char *ID);
+int printToken(FILE *ofp, struct token_t token);
