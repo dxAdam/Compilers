@@ -32,6 +32,7 @@ int isSpecialSym(char buf[]){
     int i = 0;
     while(special_symbols[i] != "\0"){
         if(strcmp(special_symbols[i], buf) == 0){
+            //printf("ISS: %s is a special sym\n", buf);
             return 1;
         }
         i++;
@@ -79,6 +80,33 @@ int printToken(FILE *ofp, struct token_t token){
         printf("(%d,ERROR,\"%s\")\n", token.lineNumber, token.ID); 
     }
     return 1;
+}
+
+int handle_comment(int *linenum, FILE *ifp){
+/*
+    if end of comment is found
+        return 1
+    else
+        return 0
+*/
+
+    int comment_start_linenum = *linenum;
+    int found_end = 0;
+    int c;
+
+    while((c = fgetc(ifp)) != EOF && found_end == 0){ // skip comment look for '*/'
+        if(c == '\n') *linenum++;
+        if(c == '*'){
+            if(fgetc(ifp) == '/'){
+                *linenum = comment_start_linenum;
+                return 1; // found end of comment, ^restored linenum
+            }
+            else{
+                ungetc(c, ifp);
+            }
+        }
+    }
+    return 0; // did not find end of comment
 }
 
 int main(int argc, char *argv[]){
@@ -139,41 +167,43 @@ int main(int argc, char *argv[]){
 
 
         if(isSpecialSym(buf)){
+            //printf("%s is special sym\n", buf);
+            fflush(stdout);
             // handle single character symbols first
+            char nextchar[2];
+            nextchar[0] = getc(ifp);
+            nextchar[1] = '\0';
 
-            buf[0] = fgetc(ifp);
-
-            if(!isSpecialSym(buf)){
-                int tmp = buf[0];
-                buf[0] = c;
+            if(!isSpecialSym(nextchar)){
+                //printf("not double special sym\n");
+                fflush(stdout);
                 buf[1] = '\0';
                 token = create_token(T_SYM, linenum, 0, buf);
                 printToken(ofp, token);
-                ungetc(tmp, ifp);
+                ungetc(nextchar[0], ifp);
             }
-            else if(c == '/' && buf[0] == '*'){
-                int comment_start_linenum = linenum;
-
-                int found_end = 0;
-                while((c = fgetc(ifp)) != EOF && found_end == 0){ // skip comment look for '*/'
-                    if(c == '\n') linenum++;
-
-                    if(c == '*')
-                        if(fgetc(ifp) == '/')
-                            found_end = 1;
-                        else
-                            ungetc(c, ifp);
+            else{
+                buf[1] = nextchar[0];
+                buf[2] = '\0';
+                //printf("double sym: %s\n", buf);
+                if(!strcmp(buf, "/*")){
+                    //printf("detected comment\n");
+                    if(!handle_comment(&linenum, ifp)){
+                        token = create_token(T_SYM, linenum, 0, buf);
+                        printToken(ofp, token);
+                        exit(1);
+                    }
                 }
-
-                if(!found_end){
-                    buf[0] = '/';
-                    buf[1] = '*';
-                    buf[2] = '\0';
-                    token = create_token(T_ERROR, comment_start_linenum, 0, buf);
-                    printToken(ofp, token);
-                    while(fgetc(ifp) != EOF);
+                else{
+                    if(!isSpecialSym(buf)){
+                        ungetc(buf[1], ifp);
+                        buf[1] = '\0';
+                    }
+                        token = create_token(T_SYM, linenum, 0, buf);
+                        printToken(ofp, token);
                 }
             }
+
             continue;
         }
 
@@ -200,7 +230,6 @@ int main(int argc, char *argv[]){
             fflush(stdout);
             exit(1);
         }
-
     }
 
     fclose(ifp);
