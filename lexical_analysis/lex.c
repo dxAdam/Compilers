@@ -195,7 +195,7 @@ int main(int argc, char *argv[]){
                     }
                 }
                 else{
-                    if(!isSpecialSym(buf)){
+                    if(!isSpecialSym(buf)){ //this is where we check if the double special char is actually a valid symbol
                         ungetc(buf[1], ifp);
                         buf[1] = '\0';
                     }
