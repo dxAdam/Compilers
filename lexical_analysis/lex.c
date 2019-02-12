@@ -98,14 +98,14 @@ int handle_comment(int *linenum, FILE *ifp){
         if(c == '\n') *linenum++;
         if(c == '*'){
             if(fgetc(ifp) == '/'){
-                *linenum = comment_start_linenum;
-                return 1; // found end of comment, ^restored linenum
+                return 1; // found end of comment
             }
             else{
                 ungetc(c, ifp);
             }
         }
     }
+    *linenum = comment_start_linenum;
     return 0; // did not find end of comment
 }
 
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]){
     }
 
     
-    char buf[256]; 
+    char buf[256];
     int linenum = 1;
     int c;
     while((c = fgetc(ifp)) != EOF){
@@ -164,7 +164,6 @@ int main(int argc, char *argv[]){
 
         buf[0] = c;
         buf[1] = '\0';
-
 
         if(isSpecialSym(buf)){
             //printf("%s is special sym\n", buf);
