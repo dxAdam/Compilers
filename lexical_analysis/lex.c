@@ -39,10 +39,10 @@ int isSpecialSym(char buf[]){
     return 0;
 }
 
-struct token_t create_token(int type, int linenum, int num, char *ID){
+struct token_t create_token(int type, int linenum, char *val, char *ID){
     struct token_t token;
 
-    if(type == T_KEY || type == T_ID || type == T_SYM){
+    if(type == T_KEY || type == T_ID || type == T_SYM || T_ERROR){
         token.type = type;
         token.lineNumber = linenum;
         token.ID = ID;
@@ -50,7 +50,7 @@ struct token_t create_token(int type, int linenum, int num, char *ID){
     else if(type == T_NUM){
         token.type = type;
         token.lineNumber = linenum;
-        token.num = num;
+        token.num = val;
     }
     return token;
 }
@@ -70,8 +70,13 @@ int printToken(FILE *ofp, struct token_t token){
         printf("(%d,SYM,\"%s\")\n", token.lineNumber, token.ID);
     }
     else if(token.type == T_NUM){
-        fprintf(ofp, "(%d,NUM,\"%ld\")\n", token.lineNumber, token.num);
-        printf("(%d,NUM,\"%ld\")\n", token.lineNumber, token.num);   
+        printf("printing NUM %s\n", token.num);
+        fprintf(ofp, "(%d,NUM,\"%s\")\n", token.lineNumber, token.num);
+        printf("(%d,NUM,\"%s\")\n", token.lineNumber, token.num);   
+    }
+    else if(token.type == T_ERROR){
+        fprintf(ofp, "(%d,ERROR,\"%s\")\n", token.lineNumber, token.ID);
+        printf("(%d,ERROR,\"%s\")\n", token.lineNumber, token.ID); 
     }
     return 1;
 }
@@ -109,14 +114,14 @@ int main(int argc, char *argv[]){
 
         // if uppercase or lowercase letter
         //if((c>64 && c<91) || (c>96 && c<123)){
-        if(isalpha(c)){ 
+        if(isalpha(c)){ // letter
             int i=0;
             do{
                 buf[i++] = (char)c;
                 c = fgetc(ifp);
                 //printf("%d  %c  %d\n", c, c, isalnum(c));
 
-            }while(isalnum(c));
+            }while(isalnum(c)); // (letter|digit)*
             buf[i] = '\0';
             
             if(isKeyword(buf))
@@ -161,12 +166,14 @@ int main(int argc, char *argv[]){
                 }
 
                 if(!found_end){
+                    buf[0] = '/';
+                    buf[1] = '*';
+                    buf[2] = '\0';
                     token = create_token(T_ERROR, comment_start_linenum, 0, buf);
                     printToken(ofp, token);
                     while(fgetc(ifp) != EOF);
                 }
             }
-
             continue;
         }
 
@@ -180,13 +187,20 @@ int main(int argc, char *argv[]){
             }while(isdigit(c));
             buf[i] = '\0';
 
-            long int val;
-            val = strtol(buf, (char **)NULL, 10);
-            token = create_token(T_NUM, linenum, val, buf);
+            token = create_token(T_NUM, linenum, buf, buf);
             printToken(ofp, token);
 
             ungetc(c, ifp);
+            continue;
         }
+
+        if(!(c == S_SPACE || c == S_NEWLINE || c == S_TAB)){
+            token = create_token(T_ERROR, linenum, 0, buf);
+            printToken(ofp, token);
+            fflush(stdout);
+            exit(1);
+        }
+
     }
 
     fclose(ifp);

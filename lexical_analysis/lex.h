@@ -65,12 +65,12 @@ char *special_symbols[] = {"+",  "-",  "*",  "/",  "<",  "<=",
 struct token_t {
     int type;
     int lineNumber;
-    int num;      // digit digit*
+    char *num;      // digit digit*
     char *ID; // lettter(letter|digit)*
 };
 
 // function prototypes
 int isKeyword(char buf[]);
 int isSpecialSym(char buf[]);
-struct token_t create_token(int type, int linenum, int num, char *ID);
+struct token_t create_token(int type, int linenum, char *num, char *ID);
 int printToken(FILE *ofp, struct token_t token);
