@@ -1,4 +1,6 @@
 /*
+    Compiler Project Part 1 - Lexical Analysis
+
     compile with: 
             make
 
@@ -13,104 +15,97 @@
 
 #include "lex.h"
 
+#define MAXSTRINGSIZE 256 // defines buffer size for reading file
+
 int isKeyword(char buf[]){
     extern char *keywords[];
 
     int i = 0;
-    while(keywords[i++] != "\0"){
-        if(strcmp(keywords[i], buf) == 0){
-            //printf("%s   matches   %s\n", buf, keywords[i]);
+    while(keywords[i] != "\0"){
+        if(strcmp(keywords[i++], buf) == 0){
             return 1;
         }
     }
     return 0; 
 }
 
+
 int isSpecialSym(char buf[]){
     extern char *special_symbols[];
 
     int i = 0;
     while(special_symbols[i] != "\0"){
-        if(strcmp(special_symbols[i], buf) == 0){
-            //printf("ISS: %s is a special sym\n", buf);
+        if(strcmp(special_symbols[i++], buf) == 0){
             return 1;
         }
-        i++;
     }
     return 0;
 }
 
+
 struct token_t create_token(int type, int linenum, char *val, char *ID){
     struct token_t token;
 
-    if(type == T_KEY || type == T_ID || type == T_SYM || T_ERROR){
-        token.type = type;
-        token.lineNumber = linenum;
-        token.ID = ID;
-    }
-    else if(type == T_NUM){
+    if(type == T_NUM){
         token.type = type;
         token.lineNumber = linenum;
         token.num = val;
     }
+    else{
+        token.type = type;
+        token.lineNumber = linenum;
+        token.ID = ID;
+    }
     return token;
 }
+
 
 int printToken(FILE *ofp, struct token_t token){
     if(token.type == T_KEY){
         fprintf(ofp, "(%d,KEY,\"%s\")\n", token.lineNumber, token.ID);
-        //printf("(%d,KEY,\"%s\")\n", token.lineNumber, token.ID);
     }
     else if(token.type == T_ID){
         fprintf(ofp, "(%d,ID,\"%s\")\n", token.lineNumber, token.ID);
-        //printf("(%d,ID,\"%s\")\n", token.lineNumber, token.ID);
-
     }
     else if(token.type == T_SYM){
         fprintf(ofp, "(%d,SYM,\"%s\")\n", token.lineNumber, token.ID);
-        //printf("(%d,SYM,\"%s\")\n", token.lineNumber, token.ID);
     }
     else if(token.type == T_NUM){
         fprintf(ofp, "(%d,NUM,\"%s\")\n", token.lineNumber, token.num);
-        //printf("(%d,NUM,\"%s\")\n", token.lineNumber, token.num);   
     }
     else if(token.type == T_ERROR){
         fprintf(ofp, "(%d,ERROR,\"%s\")\n", token.lineNumber, token.ID);
-        //printf("(%d,ERROR,\"%s\")\n", token.lineNumber, token.ID); 
     }
 
     fflush(ofp);
     return 1;
 }
 
-int handle_comment(int *linenum, FILE *ifp){
-/*
-    if end of comment is found
-        return 1
-    else
-        return 0
-*/
 
+int handle_comment(int *linenum, FILE *ifp){
     int comment_start_linenum = *linenum;
     int found_end = 0;
     int c;
-    int cn;
 
     while((c = getc(ifp)) != EOF && found_end == 0){ // skip comment look for '*/'
         if(c == '\n'){
             *linenum = *linenum + 1;
         }
         if(c == '*'){
-            if((cn =fgetc(ifp)) != EOF && cn == '/'){
-                return 1; // found end of comment
+            if((c =fgetc(ifp)) != EOF && c == '/'){
+                // found end of comment
+                return 1; 
             }
             else{
-                ungetc(cn, ifp);
+                ungetc(c, ifp);
             }
         }
     }
+
     *linenum = comment_start_linenum;
+
     return 0; // did not find end of comment
+
 }
 
 int main(int argc, char *argv[]){
@@ -118,7 +113,7 @@ int main(int argc, char *argv[]){
     if(argc < 3) {
         printf("file names not detected!\n");
         printf("usage: ./lex <input file> <output file>\n");
-        return 1; // final version will exit here
+        return 1;
     }
 
     FILE *ifp; 
@@ -128,37 +123,36 @@ int main(int argc, char *argv[]){
         printf("Error opening file\n");
         return 1;
     }
-    else if((ofp = fopen(argv[2], "w+")) == NULL){
+
+    if((ofp = fopen(argv[2], "w+")) == NULL){
         printf("Error preparing output file\n");
         return 1;
     }
 
-    
-    char buf[256];
+    char buf[MAXSTRINGSIZE];
     int linenum = 1;
     int c;
+
+    // begin reading 1 char at a time
     while((c = fgetc(ifp)) != EOF){
         if(c == '\n') linenum++;
-        //printf("%d  %c  %d\n", c, c, isalnum(c));
+
         struct token_t token;
-        //c = 0x22bd;
-        //printf("(1,ERROR,\"%c\")\n", c);
-        // if uppercase or lowercase letter
-        //if((c>64 && c<91) || (c>96 && c<123)){
+
         if(isalpha(c)){ // letter
             int i=0;
             do{
                 buf[i++] = (char)c;
                 c = fgetc(ifp);
-                //printf("%d  %c  %d\n", c, c, isalnum(c));
-
             }while(isalnum(c)); // (letter|digit)*
             buf[i] = '\0';
             
-            if(isKeyword(buf))
+            if(isKeyword(buf)){
                 token = create_token(T_KEY, linenum, 0, buf);
-            else // string that is not keyword
+            }
+            else{ // string that is not keyword
                 token = create_token(T_ID, linenum, 0, buf);
+            }
             printToken(ofp, token);  
             
             ungetc(c, ifp);
@@ -167,41 +161,35 @@ int main(int argc, char *argv[]){
 
         buf[0] = c;
         buf[1] = '\0';
-
         if(isSpecialSym(buf)){
-            //printf("%s is special sym\n", buf);
-            //fflush(stdout);
-            // handle single character symbols first
+
             char nextchar[2];
             nextchar[0] = getc(ifp);
             nextchar[1] = '\0';
 
             if(!isSpecialSym(nextchar)){
-                //printf("not double special sym\n");
+                // next char is not a special symbol so tokenize current special char
                 buf[1] = '\0';
                 token = create_token(T_SYM, linenum, 0, buf);
                 printToken(ofp, token);
                 ungetc(nextchar[0], ifp);
             }
             else{
+                // next char is also special symbol so tokenize double special char
                 buf[1] = nextchar[0];
                 buf[2] = '\0';
-                //printf("double sym: %s\n", buf);
+
+                // handle special case that double special char is /*
                 if(!strcmp(buf, "/*")){
-                    //printf("detected comment\n");
                     if(!handle_comment(&linenum, ifp)){
+                        // end of comment not found print error
                         token = create_token(T_ERROR, linenum, 0, buf);
                         printToken(ofp, token);
                     }
-                    //else{
-                    //    printf("handle comment success\n");
-                    //    token = create_token(T_ERROR, linenum, 0, buf);
-                    //    printToken(ofp, token);
-                    //    exit(0);
-                    //}
                 }
                 else{
-                    if(!isSpecialSym(buf)){ //this is where we check if the double special char is actually a valid symbol
+                    // double special char is not /* so tokenize normally if valid
+                    if(!isSpecialSym(buf)){
                         ungetc(buf[1], ifp);
                         buf[1] = '\0';
                     }
@@ -215,11 +203,9 @@ int main(int argc, char *argv[]){
 
         if(isdigit(c)){
             int i=0;
-            do{
+            do{ // read the rest of the digits
                 buf[i++] = c;
                 c = fgetc(ifp);
-                //printf("%d  %c  %d\n", c, c, isalnum(c));
-
             }while(isdigit(c));
             buf[i] = '\0';
 
@@ -230,18 +216,18 @@ int main(int argc, char *argv[]){
             continue;
         }
 
+        // if none of the above structures are entered then c
+        //  is either a whitespace character or invalid
         if(!(c == S_SPACE || c == S_NEWLINE || c == S_TAB)){
-
             buf[0] = c;
             buf[1] = '\0';
             token = create_token(T_ERROR, linenum, buf, buf);
             printToken(ofp, token);
-            exit(0);
+            return 0;
         }
     }
 
     fclose(ifp);
     fclose(ofp);
-    //printf("\nnormal exit\n");
     return 0;
 }

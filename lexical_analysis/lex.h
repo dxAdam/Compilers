@@ -7,7 +7,7 @@
                     a-z       97-122         
 */
 
-// we might not need these
+// we might want these for the parsing project
 #define S_PLUS                '+'
 #define S_HYPHEN              '-'
 #define S_ASTERISK            '*'
@@ -55,7 +55,7 @@
 
 char *keywords[] = {"else",   "if",   "int",
                     "return", "void", "while", "\0"};
-                                            // "\0" marks end of arrays
+                                    // "\0" marks end of arrays
 
 char *special_symbols[] = {"+",  "-",  "*",  "/",  "<",  "<=",
                            ">",  ">=", "==", "!=", "=",  ";",
@@ -74,3 +74,5 @@ int isKeyword(char buf[]);
 int isSpecialSym(char buf[]);
 struct token_t create_token(int type, int linenum, char *num, char *ID);
 int printToken(FILE *ofp, struct token_t token);
+int handle_comment(int *linenum, FILE *ifp);
+
