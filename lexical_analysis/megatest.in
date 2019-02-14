@@ -1,5 +1,3 @@
-â
-a /**/*/*/*/b*/c/** /*/d
 aaa /* not visible
 to the
 scanner because */ bbb /* i am 
@@ -39,7 +37,7 @@ xX
 yY
 zZ
 aA0123456789zZ
-bB02
+b02
 0a
 a
 b
