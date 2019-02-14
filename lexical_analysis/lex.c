@@ -59,26 +59,27 @@ struct token_t create_token(int type, int linenum, char *val, char *ID){
 int printToken(FILE *ofp, struct token_t token){
     if(token.type == T_KEY){
         fprintf(ofp, "(%d,KEY,\"%s\")\n", token.lineNumber, token.ID);
-        printf("(%d,KEY,\"%s\")\n", token.lineNumber, token.ID);
+        //printf("(%d,KEY,\"%s\")\n", token.lineNumber, token.ID);
     }
     else if(token.type == T_ID){
         fprintf(ofp, "(%d,ID,\"%s\")\n", token.lineNumber, token.ID);
-        printf("(%d,ID,\"%s\")\n", token.lineNumber, token.ID);
+        //printf("(%d,ID,\"%s\")\n", token.lineNumber, token.ID);
 
     }
     else if(token.type == T_SYM){
         fprintf(ofp, "(%d,SYM,\"%s\")\n", token.lineNumber, token.ID);
-        printf("(%d,SYM,\"%s\")\n", token.lineNumber, token.ID);
+        //printf("(%d,SYM,\"%s\")\n", token.lineNumber, token.ID);
     }
     else if(token.type == T_NUM){
-        printf("printing NUM %s\n", token.num);
         fprintf(ofp, "(%d,NUM,\"%s\")\n", token.lineNumber, token.num);
-        printf("(%d,NUM,\"%s\")\n", token.lineNumber, token.num);   
+        //printf("(%d,NUM,\"%s\")\n", token.lineNumber, token.num);   
     }
     else if(token.type == T_ERROR){
         fprintf(ofp, "(%d,ERROR,\"%s\")\n", token.lineNumber, token.ID);
-        printf("(%d,ERROR,\"%s\")\n", token.lineNumber, token.ID); 
+        //printf("(%d,ERROR,\"%s\")\n", token.lineNumber, token.ID); 
     }
+
+    fflush(ofp);
     return 1;
 }
 
@@ -95,7 +96,9 @@ int handle_comment(int *linenum, FILE *ifp){
     int c;
 
     while((c = fgetc(ifp)) != EOF && found_end == 0){ // skip comment look for '*/'
-        if(c == '\n') *linenum++;
+        if(c == '\n'){
+            *linenum = *linenum + 1;
+        }
         if(c == '*'){
             if(fgetc(ifp) == '/'){
                 return 1; // found end of comment
@@ -167,7 +170,7 @@ int main(int argc, char *argv[]){
 
         if(isSpecialSym(buf)){
             //printf("%s is special sym\n", buf);
-            fflush(stdout);
+            //fflush(stdout);
             // handle single character symbols first
             char nextchar[2];
             nextchar[0] = getc(ifp);
@@ -175,7 +178,6 @@ int main(int argc, char *argv[]){
 
             if(!isSpecialSym(nextchar)){
                 //printf("not double special sym\n");
-                fflush(stdout);
                 buf[1] = '\0';
                 token = create_token(T_SYM, linenum, 0, buf);
                 printToken(ofp, token);
@@ -226,13 +228,12 @@ int main(int argc, char *argv[]){
         if(!(c == S_SPACE || c == S_NEWLINE || c == S_TAB)){
             token = create_token(T_ERROR, linenum, 0, buf);
             printToken(ofp, token);
-            fflush(stdout);
             exit(1);
         }
     }
 
     fclose(ifp);
     fclose(ofp);
-    printf("\nnormal exit\n");
+    //printf("\nnormal exit\n");
     return 0;
 }
