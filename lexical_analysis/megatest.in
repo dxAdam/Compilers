@@ -1,0 +1,178 @@
+â
+a /**/*/*/*/b*/c/** /*/d
+aaa /* not visible
+to the
+scanner because */ bbb /* i am 
+a comment*/ccc/**/ddd
+/* this is a /* comment */ aaa /* another /* comm /* ent */ bbb
+this is a/* comment really */b
+a/*/
+one
+two/*this is 
+nothing
+really
+a*/
+aA
+bB
+cC
+dD
+eE
+fF
+gG
+hH
+iI
+jJ
+kK
+lL
+mM
+nN
+oO
+pP
+qQ
+rR
+sS
+tT
+uU
+vV
+wW
+xX
+yY
+zZ
+aA0123456789zZ
+bB02
+0a
+a
+b
+!aa
+a_b
+a /= b;
+a -= b;
+a *= b;
+a += b;
+else
+if
+int
+return
+void
+while
+ElSe
+IF
+els
+els e
+e lse
+elsee
+else9
+eelse
+9else
+9a1
+00012345678909 184467440737095516159999
+123
+-123
++123
+0
+9
+924a
+/* A program to perform Euclid's
+   Algorithm to compute gcd. */
+
+int gcd (int u, int v)
+{
+    if (v == 0) return u ;
+    else return gcd(v,u-u/v*v);
+    /* u-u/v*v == u mod v */
+}
+
+void main(void)
+{
+    int x;
+    int y;
+    x = input();
+    y = input();
+    println(gcd(x,y));
+}
+/* A program to perform selection sort on a 10 element array */
+int x[10];
+int minloc(int a[], int low, int high) {
+    int i;
+    int x;
+    int k;
+    k = low;
+    x = a[low];
+    i = low + 1;
+    while (i < high) {
+        if (a[i] < x) {
+            x = a[i];
+            k = i;
+        }
+        i = i + 1;
+    }
+    return k;
+}
+void sort(int a[], int low, int high) {
+    int i;
+    int k;
+    i = low;
+    while (i < high - 1) {
+        int t;
+        k = minloc(a, i, high);
+        t = a[k];
+        a[k] = a[i];
+        a[i] = t;
+        i = i + 1;
+    }
+}
+void main(void) {
+    int i;
+    i = 0;
+    while (i < 10) {
+        x[i] = input();
+        i = i + 1;
+    }
+    sort(x, 0, 10);
+    i = 0;
+    while (i < 10) {
+        println(x[i]);
+        i = i + 1;
+    }
+}
+void main(void)
+{
+  int a;
+  a = 4 + 5;
+}
+int sum(int x){
+  if(x>0)
+    return x + sum(x-1);
+  return 0;
+}
+
+void main(void){
+  println(sum(10));
+}
+this is 9a error
+this is !!! a error
++  -  *  /  <  <=  >  >=  ==  !=  =  ;  ,  (  )  [  ]  {  }  /*  */ +
+--a++<=4 > = 5/*88*/==71-1 +2 * 4//1<2;
+a,b;c)d[e ]{ f}(
+91+2
+a	b c     d  		 e	/*
+
+some
+nothing
+
+*/	d
+
+
+
+
+e
+   
+		
+         	
+
+
+f
+
+
+
+

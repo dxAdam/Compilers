@@ -94,17 +94,18 @@ int handle_comment(int *linenum, FILE *ifp){
     int comment_start_linenum = *linenum;
     int found_end = 0;
     int c;
+    int cn;
 
-    while((c = fgetc(ifp)) != EOF && found_end == 0){ // skip comment look for '*/'
+    while((c = getc(ifp)) != EOF && found_end == 0){ // skip comment look for '*/'
         if(c == '\n'){
             *linenum = *linenum + 1;
         }
         if(c == '*'){
-            if(fgetc(ifp) == '/'){
+            if((cn =fgetc(ifp)) != EOF && cn == '/'){
                 return 1; // found end of comment
             }
             else{
-                ungetc(c, ifp);
+                ungetc(cn, ifp);
             }
         }
     }
@@ -123,11 +124,11 @@ int main(int argc, char *argv[]){
     FILE *ifp; 
     FILE *ofp;
     
-    if(!(ifp = fopen(argv[1], "r"))) {
+    if((ifp = fopen(argv[1], "r")) == NULL) {
         printf("Error opening file\n");
         return 1;
     }
-    else if(!(ofp = fopen(argv[2], "w+"))){
+    else if((ofp = fopen(argv[2], "wb")) == NULL){
         printf("Error preparing output file\n");
         return 1;
     }
@@ -137,12 +138,11 @@ int main(int argc, char *argv[]){
     int linenum = 1;
     int c;
     while((c = fgetc(ifp)) != EOF){
-        //printf("%c\n", c);
         if(c == '\n') linenum++;
         //printf("%d  %c  %d\n", c, c, isalnum(c));
-
         struct token_t token;
-
+        //c = 0x22bd;
+        //printf("(1,ERROR,\"%c\")\n", c);
         // if uppercase or lowercase letter
         //if((c>64 && c<91) || (c>96 && c<123)){
         if(isalpha(c)){ // letter
@@ -190,10 +190,15 @@ int main(int argc, char *argv[]){
                 if(!strcmp(buf, "/*")){
                     //printf("detected comment\n");
                     if(!handle_comment(&linenum, ifp)){
-                        token = create_token(T_SYM, linenum, 0, buf);
+                        token = create_token(T_ERROR, linenum, 0, buf);
                         printToken(ofp, token);
-                        exit(1);
                     }
+                    //else{
+                    //    printf("handle comment success\n");
+                    //    token = create_token(T_ERROR, linenum, 0, buf);
+                    //    printToken(ofp, token);
+                    //    exit(0);
+                    //}
                 }
                 else{
                     if(!isSpecialSym(buf)){ //this is where we check if the double special char is actually a valid symbol
@@ -226,9 +231,12 @@ int main(int argc, char *argv[]){
         }
 
         if(!(c == S_SPACE || c == S_NEWLINE || c == S_TAB)){
-            token = create_token(T_ERROR, linenum, 0, buf);
+
+            buf[0] = c;
+            buf[1] = '\0';
+            token = create_token(T_ERROR, linenum, buf, buf);
             printToken(ofp, token);
-            exit(1);
+            exit(0);
         }
     }
 
