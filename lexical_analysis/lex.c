@@ -128,7 +128,7 @@ int main(int argc, char *argv[]){
         printf("Error opening file\n");
         return 1;
     }
-    else if((ofp = fopen(argv[2], "wb")) == NULL){
+    else if((ofp = fopen(argv[2], "w+")) == NULL){
         printf("Error preparing output file\n");
         return 1;
     }
