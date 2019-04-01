@@ -1,13 +1,3 @@
-/*
-    Compiler Project Part 1 - Lexical Analysis
-
-    compile with: 
-            make
-
-    run with:
-            ./lex input.c output.txt
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -46,16 +36,16 @@ token_t create_token(int type, int linenum, char *val, char *ID){
     token_t token;
 
     if(type == T_NUM){
-        printf("    token: %s\n", val);
         token.type = type;
         token.lineNumber = linenum;
         strcpy(token.num, val);
+        strcpy(token.ID, val); // this is a quick fix for a parsing problem
     }
     else{
-        printf("    token: %s\n", ID);
         token.type = type;
         token.lineNumber = linenum;
         strcpy(token.ID, ID);
+        strcpy(token.num, ID); // this is a quick fix for a parsing problem
     }
     return token;
 }
@@ -84,7 +74,6 @@ int printToken(FILE *ofp, token_t token){
 }
 
 
-
 int handle_comment(int *linenum, FILE *ifp){
     int comment_start_linenum = *linenum;
     int found_end = 0;
@@ -109,6 +98,7 @@ int handle_comment(int *linenum, FILE *ifp){
 
     return 0; // did not find end of comment
 }
+
 
 token_t getToken(FILE *ifp){
 
