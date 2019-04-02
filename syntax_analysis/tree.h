@@ -14,7 +14,7 @@ typedef struct node {
     unsigned int assStmt           : 1;
     unsigned int selectStmt        : 1;
     unsigned int returnStmt        : 1;
-    unsigned int ifStmt            : 1;
+    unsigned int ifWhileStmt       : 1;
     unsigned int varStmt           : 1;
     unsigned int compStmt          : 1;
     unsigned int eqlStmt           : 1;
@@ -22,6 +22,9 @@ typedef struct node {
     unsigned int simpleMultStmt    : 1;  //  "*" or "\"
     unsigned int complexAddStmt    : 1;
     unsigned int complexMultStmt   : 1;
+    unsigned int callStmt          : 1;
+    unsigned int semicolon         : 1;
+    unsigned int num               : 1;
 
     // token vars
     char *val;

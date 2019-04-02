@@ -16,8 +16,8 @@
 #define S_CLOSE_PARENTHESIS   ')'
 #define S_OPENING_BRACKET     '['
 #define S_CLOSING_BRACKET     ']'
-#define S_OPENING_BRACE       '}'
-#define S_CLOSING_BRACE       '{'
+#define S_OPENING_BRACE       '{'
+#define S_CLOSING_BRACE       '}'
 
 // for multiple character symbols we can use values after 255
 #define S_LT_EQUAL            256    //   <=
@@ -55,13 +55,27 @@ typedef struct token {
     char ID[MAXSTRINGSIZE];       // lettter(letter|digit)*
 } token_t;
 
+
+typedef enum { false, true } bool;
+
+
 token_t getToken(FILE *ofp);
 int printToken(FILE *ofp, token_t token);
 
+bool isVarDecl(int i);
+bool isFuncDecl(int i);
+bool isFunction(int i);
+bool isOpSym(int i);
+bool checkCloseParen(int i);
+
 int newVarDeclNode(int i, Node *Tree);
 int newFuncDeclNode(int i, Node *Tree);
+int newIfNode(int i, Node *compStmt);
+int newWhileNode(int i, Node *compStmt);
 int newReturnNode(int i, Node *compStmt);
+int newCallNode(int i, Node *compStmt);
 int newNumNode(int i, Node *parent);
+int newSemicolonNode(int i, Node *compStmt);
 
 int handleVarDecl(int i, Node *varNode);
 int handleVarArrDecl(int i, Node *varNode);
@@ -69,9 +83,12 @@ int handleFuncDecl(int i, Node *varNode);
 int handleFuncParams(int i, Node *params);
 int handleCompStmt(int i, Node *compStmt);
 int handleIfStmt(int i, Node *compStmt);
+int handleWhileStmt(int i, Node *compStmt);
 int handleEqlStmt(int i, Node *eqlStmt);
 int handleSimpleAddOp(int i, Node *parent);
 int handleComplexAddOp(int i, int tmp, Node *parent);
+int handleCallStmt(int i, Node *callStmt);
+int handleCallArgs(int i, Node *argNode);
 
 void printTree(Node *Tree);
 void printCompStmt(Node *compStmt);
@@ -81,5 +98,6 @@ void printVarDecl(Node *varDecl);
 void printSimpleAdd(Node *addStmt);
 void printRetStmt(Node *retStmt);
 void printVar(Node *varNode);
+void printCallStmt(Node *callStmt);
 
 

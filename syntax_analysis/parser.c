@@ -4,12 +4,21 @@
 
 #include "parser.h"
 
-typedef enum { false, true } bool;
+// turn on/off for error printout
+#define REPORT_ERROR 1
 
 token_t tokens[1000];
 
-bool isVarDecl(int index){
-    int i = index;
+// keep track of parens
+int paren_count = 0;
+
+void errorExit(char *e){
+    if(REPORT_ERROR)
+        printf("ERROR: %s\n", e);
+    exit(1);
+}
+
+bool isVarDecl(int i){
     if(!strcmp(tokens[i].ID, "int")){
         if(!strcmp(tokens[i+2].ID, ";") || !(strcmp(tokens[i+2].ID, "[")))
             return true;
@@ -18,13 +27,61 @@ bool isVarDecl(int index){
     return false;
 }
 
-bool isFuncDecl(int index){
-    int i = index;
+bool isFuncDecl(int i){
     if(!strcmp(tokens[i].ID, "void") && !strcmp(tokens[i+2].ID, "("))
         return true;
     if(!strcmp(tokens[i].ID, "int") && !strcmp(tokens[i+2].ID, "("))
         return true;
 
+    return false;
+}
+
+bool isComparison(int i){
+    if(!strcmp(tokens[i].ID, "=="))
+        return true;
+    if(!strcmp(tokens[i].ID, "!="))
+        return true;
+    if(!strcmp(tokens[i].ID, ">="))
+        return true;
+    if(!strcmp(tokens[i].ID, "<="))
+        return true;
+    if(!strcmp(tokens[i].ID, ">"))
+        return true;
+    if(!strcmp(tokens[i].ID, "<"))
+        return true;
+
+    return false;
+}
+
+bool isFunction(int i){
+    if(tokens[i].type == T_ID && tokens[i+1].ID[0] == S_OPEN_PARENTHESIS){
+        if(checkCloseParen(i))
+            return true;
+    }
+    
+    return false;
+}
+
+bool isOpSym(int i){
+    if(tokens[i].ID[0] == S_PLUS)
+        return true;
+    if(tokens[i].ID[0] == S_HYPHEN)
+        return true;
+    if(tokens[i].ID[0] == S_SLASH)
+        return true;
+    if(tokens[i].ID[0] == S_ASTERISK)
+        return true;
+
+    return false;
+}
+
+bool checkCloseParen(int i){
+    // if there's ")" before ";" then return true
+    while(tokens[i].ID[0] != S_SEMICOLON){
+        if(tokens[i].ID[0] == S_CLOSE_PARENTHESIS)
+            return true;
+        i++;
+    }
     return false;
 }
 
@@ -84,10 +141,8 @@ int newNumNode(int i, Node *parent){
     int j = 0;
     j = new_child_node(parent);
 
-    parent->children[j]->var = 1;
+    parent->children[j]->num = 1;
     parent->children[j]->ID = tokens[i].ID;
-
-    printf("put %s in node\n", tokens[i].ID);
 
     return i;
 }
@@ -100,7 +155,7 @@ int newOpNode(int i, Node *opNode){
 
     while(strcmp(tokens[tmp].ID, ";")) tmp++;
 
-    i_max = tmp;
+    i_max = tmp -1;
 
     // back up from ; to op symbol
     tmp -= 2;
@@ -132,7 +187,6 @@ int newOpNode(int i, Node *opNode){
     return i_max;
 }
 
-// parent could be compStmt or program
 int newAssignNode(int i, Node *parent){
         int j = 0;
         j = new_child_node(parent);
@@ -150,8 +204,7 @@ int newAssignNode(int i, Node *parent){
         //printf("new assign node tokens[i+1].ID : %s\n", tokens[i+1].ID);
 
 
-        // add what variable is = to    //refine for complex stmts
-
+        // add what variable is = to 
         if(!strcmp(tokens[i+1].ID, ";")){
             int j2 = new_child_node(assNode);
 
@@ -160,13 +213,18 @@ int newAssignNode(int i, Node *parent){
             else if(tokens[i].type == T_ID)
                 assNode->children[j2]->ID = tokens[i].ID;
         }
+        else if(isFunction(i)){
+            i = newCallNode(i, assNode);
+            i--;
+        }
         else if(tokens[i+1].type == T_SYM){
             //printf("making new op node\n");
-            i = newOpNode(i, assNode);
+            if(tokens[i+1].ID[0] == S_EQUALS);
+                i = newOpNode(i, assNode);
         }
             
 
-        return i;   
+        return ++i;   
 }
 
 int newEqlStmtNode(int i, Node *ifStmt){
@@ -175,7 +233,7 @@ int newEqlStmtNode(int i, Node *ifStmt){
     int j = 0;
     j = new_child_node(ifStmt);
 
-    ifStmt->children[j]->ID = "==";
+    ifStmt->children[j]->ID = tokens[i+1].ID;
     ifStmt->children[j]->eqlStmt = 1;
     
     i = newVarNode(i, ifStmt->children[j]);
@@ -185,17 +243,64 @@ int newEqlStmtNode(int i, Node *ifStmt){
     j2 = new_child_node(ifStmt->children[j]);
     ifStmt->children[j]->children[j2]->ID = tokens[i+1].num;
 
+    i+=3;
+
     return i;
 }
 
-int newIfStmtNode(int i, Node *Tree){
+int newIfNode(int i, Node *compStmt){
     int j = 0;
-    j = new_child_node(Tree);
+    j = new_child_node(compStmt);
 
-    Tree->children[j]->ID = "selection-stmt";
-    Tree->children[j]->ifStmt = 1;
+    compStmt->children[j]->ID = "selection-stmt";
+    compStmt->children[j]->ifWhileStmt = 1;
 
-    i = handleIfStmt(i, Tree->children[j]);
+    i = handleIfStmt(i, compStmt->children[j]);
+
+    return i;
+}
+
+int newWhileNode(int i, Node *compStmt){
+    int j = 0;
+    j = new_child_node(compStmt);
+
+    compStmt->children[j]->ID = "iteration-stmt";
+    compStmt->children[j]->ifWhileStmt = 1;
+
+    i = handleWhileStmt(i, compStmt->children[j]);
+
+    return i;
+}
+
+int newCallNode(int i, Node *compStmt){
+    int j = 0;
+    j = new_child_node(compStmt);
+
+    compStmt->children[j]->ID = "call";
+    compStmt->children[j]->callStmt = 1;
+
+    Node *callNode = compStmt->children[j];
+
+    // function name
+    j = new_child_node(callNode);
+    callNode->children[j]->ID = tokens[i].ID; // function ID
+
+    // function args
+    j = new_child_node(callNode);
+    callNode->children[j]->ID = "args";
+
+    i = handleCallArgs(i, callNode->children[j]);
+
+    //printf("exiting newCallNode token : %s\n", tokens[i].ID);
+
+    return i;
+}
+
+int newSemicolonNode(int i, Node *compStmt){
+    int j = 0;
+    j = new_child_node(compStmt);
+    compStmt->children[j]->ID = tokens[i].ID; // should be ";"
+    compStmt->children[j]->semicolon = 1;
 
     return i;
 }
@@ -229,10 +334,10 @@ int newReturnNode(int i, Node *compStmt){
 int handleVarDecl(int i, Node *varNode){
     int j = 0;
 
-
     if(varNode->compStmt == 1)
         printf("handleVarDecl Comp\n");
 
+    //printf("handleVarDecl for %s", tokens[i].ID);
 
     // add "int"
     j = new_child_node(varNode);
@@ -256,8 +361,11 @@ int handleVarDecl(int i, Node *varNode){
     else if(!strcmp(tokens[i].ID, "[")){
         j = new_child_node(varNode);
         varNode->children[j]->ID = tokens[i+1].num;
-        i++;
+        i+=3;
     }
+
+    //else if(!strcmp(tokens[i].ID, "("))
+    //    printf("var decl to function\n");
 
 
 
@@ -289,18 +397,58 @@ int handleFuncDecl(int i, Node *funcNode){
 
     i = handleFuncParams(i, funcNode->children[j]);
 
+    // empty function case
+    if(tokens[i+1].ID[0] == S_CLOSING_BRACE)
+        return i;
+
     // handle compound stmt
     j = new_child_node(funcNode);
     funcNode->children[j]->ID = "compound-stmt";
     funcNode->children[j]->compStmt = 1;
 
-
     i++;
-
 
     i = handleCompStmt(i, funcNode->children[j]);
 
+    return i;
+}
 
+int handleCallArgs(int i, Node *argNode){
+    // skip function ID
+    i++;
+
+    //printf("hanlding call args token: %s\n", tokens[i].ID);
+    
+    //skip "("
+    i++;
+    
+    while(tokens[i].ID[0] != S_SEMICOLON){
+        // token should be ID or NUM
+        if(tokens[i].type == T_NUM){
+            i = newNumNode(i, argNode);
+            //printf("added num node\n");
+            i++;
+        }
+        else if(tokens[i].type == T_ID){
+            i = newVarNode(i, argNode);
+            //printf("added var node\n");
+            i++;
+        }
+        else if(tokens[i].type == T_SYM){
+            errorExit("handleCallArgs: Unexpected symbol");
+            
+        }
+        else
+            errorExit("handleCallArgs: Not ID or NUM");
+    
+        if(tokens[i+1].ID[0] != S_SEMICOLON){
+            i++;
+            if(tokens[i].ID[0] == S_COMMA)
+                i++;
+            else
+                errorExit("handleCallArgs: missing comma");
+        }
+    }
 
     return i;
 }
@@ -328,41 +476,49 @@ int handleCompStmt(int i, Node *compStmt){
     i++;
 
     while(strcmp(tokens[i].ID, "}")){
+
+        //printf("handleComplex token : %s    linenum: %d\n", tokens[i].ID, tokens[i].lineNumber);
         
         // an ID is an assignment operation or function call
         if(tokens[i].type == T_ID){
             if(!strcmp(tokens[i+1].ID, "=") || !strcmp(tokens[i+1].ID, "[")){
-                printf("! token id: %s\n", tokens[i].ID);
+                //printf("! token id: %s\n", tokens[i].ID);
                 i = newAssignNode(i, compStmt);
             }
-            while(strcmp(tokens[i].ID, ";"))i++;
+            else if(isFunction(i))
+                i = newCallNode(i, compStmt);
+            else
+                errorExit("handleCompStmt: Unknown ID stmt");
+            
         }
         else if(tokens[i].type == T_KEY){
             if(isVarDecl(i)){
-                //printf("compstmt varDecl tokens[i].ID : %s\n", tokens[i+1].ID);
                 i = newVarDeclNode(i, compStmt);
-                
             }
             else if(!strcmp(tokens[i].ID, "if")){
-                printf("ifstmt\n");
-                i = newIfStmtNode(i, compStmt);
+                i = newIfNode(i, compStmt);
             }
             else if(!strcmp(tokens[i].ID, "return")){
-                printf("returnstmt\n");
+                //printf("returnstmt\n");
                 //while(strcmp(tokens[i].ID, ";"))i++;
-                newReturnNode(i, compStmt);
+                i = newReturnNode(i, compStmt);
             }   
             else if(!strcmp(tokens[i].ID, "while")){
-                printf("whilestmt\n");
-                while(strcmp(tokens[i].ID, ";"))i++;
-
+                //printf("whilestmt\n");
+                i = newWhileNode(i, compStmt);
             }
+            else
+            {
+                printf("Compound Stmt unhandled key: %s\n", tokens[i].ID);
+                exit(1);
+            }
+            
         }
-        else if(tokens[i].type == T_SYM)
-            ;    
+        else if(tokens[i].type == T_SYM){
+            if(tokens[i].ID[0] == S_SEMICOLON)
+                i = newSemicolonNode(i, compStmt);
+        }
         i++;
-
-    
     }
 
 
@@ -375,12 +531,12 @@ int handleCompStmt(int i, Node *compStmt){
 int handleIfStmt(int i, Node *ifStmtNode){
     i+=2;
     if(tokens[i].type == T_ID){
-        if(!strcmp(tokens[i+1].ID, "==")){
-            //printf("new == stmt\n");
+        if(isComparison(i+1)){
             i = newEqlStmtNode(i, ifStmtNode);
         }
-
+        else errorExit("If stmt no comparison\n");
     }
+    else errorExit("If stmt no ID type");
 
     // handle compound stmt
     int j=0;
@@ -388,13 +544,33 @@ int handleIfStmt(int i, Node *ifStmtNode){
     ifStmtNode->children[j]->ID = "compound-stmt";
     ifStmtNode->children[j]->compStmt = 1;
 
+
+
     i = handleCompStmt(i, ifStmtNode->children[j]);
-    
-    //printf("handle if stmt : tokens[i].ID : %s\n", tokens[i].ID);
-    
-    // skip "}"
 
     return i;
+}
+
+int handleWhileStmt(int i, Node *whileStmt){
+    i+=2;
+    if(tokens[i].type == T_ID){
+        if(isComparison(i+1)){
+            i = newEqlStmtNode(i, whileStmt);
+        }
+        else errorExit("While stmt no comparison\n");
+    }
+    else errorExit("While stmt no ID type");
+
+    // handle compound stmt
+    int j=0;
+    j = new_child_node(whileStmt);
+    whileStmt->children[j]->ID = "compound-stmt";
+    whileStmt->children[j]->compStmt = 1;
+
+    i = handleCompStmt(i, whileStmt->children[j]);
+
+    return i;
+
 }
 
 int handleSimpleAddOp(int i, Node *parent){
@@ -469,9 +645,8 @@ int handleComplexAddOp(int i, int tmp, Node *assNode){
     //printf("complexAdd j: %d   tokens[tmp].ID : %s\n", j, tokens[tmp].ID);
     opNode->children[j]->ID = tokens[tmp].ID;
     
-    return tmp++;
+    return tmp;
 }
-
 
 void printTree(Node *Tree){
 
@@ -510,11 +685,12 @@ void printTree(Node *Tree){
 
             printf("]\n");
 
-            compStmt = child->children[3];
-
-            printCompStmt(compStmt);
-
-            printf("  ]\n");
+            printf("    [compound-stmt\n");
+            if(child->children[3] != NULL){
+                compStmt = child->children[3];
+                printCompStmt(compStmt);
+            }
+            printf("    ]\n  ]\n");
 
         }
         else if(Tree->children[i]->varDecl == 1){
@@ -523,11 +699,10 @@ void printTree(Node *Tree){
         
         i++;
     }
+    printf("]");
 }
 
-
 void printCompStmt(Node *compStmt){
-    printf("    [%s\n", compStmt->ID);
     
     int j = 0;
     while(compStmt->children[j] != NULL){
@@ -538,7 +713,7 @@ void printCompStmt(Node *compStmt){
             //printf("      [%s\n", compStmt->children[j]->ID);
             printAssStmt(compStmt->children[j]);
         }
-        else if(compStmt->children[j]->ifStmt == 1){
+        else if(compStmt->children[j]->ifWhileStmt == 1){
             printf("      [%s\n", compStmt->children[j]->ID);
             printIfStmt(compStmt->children[j]);
         }
@@ -549,11 +724,16 @@ void printCompStmt(Node *compStmt){
             //printf("printRetStmt\n");
             printRetStmt(compStmt->children[j]);
         }
+        else if(compStmt->children[j]->callStmt == 1){
+            printCallStmt(compStmt->children[j]);
+        }
+        else if(compStmt->children[j]->semicolon == 1){
+            printf("      [%s]\n", compStmt->children[j]->ID);
+        }
         //printf("compstmt end\n");
 
         j++;
     }
-    printf("       ]\n");
 
 }
 
@@ -573,10 +753,37 @@ void printIfStmt(Node *ifStmt){
     printf("    ]\n");
 }
 
+void printCallStmt(Node *callStmt){
+    printf("        [%s\n", callStmt->ID);
+    printf("          [%s] \n", callStmt->children[0]->ID);
+
+    Node *argNode = callStmt->children[1];
+    
+    printf("          [%s", argNode->ID);
+
+    int j = 0;
+    while(argNode->children[j] != NULL){
+        if(argNode->children[j]->var == 1){
+            printf(" ");
+            printVar(argNode->children[j]);
+        }
+        else
+            printf(" [%s]", argNode->children[j]->ID);
+        j++;
+    }
+
+    printf("]\n");
+}
+
 void printVar(Node *varNode){
     printf("[%s", varNode->ID);
     // variable id
-    printf(" [%s]]" , varNode->children[0]->ID);
+    printf(" [%s]" , varNode->children[0]->ID);
+    // index
+    if(varNode->children[1] != NULL)
+        printf(" [%s]", varNode->children[1]->ID);
+
+    printf("]");
 }
 
 void printAssStmt(Node *assStmt){
@@ -598,6 +805,11 @@ void printAssStmt(Node *assStmt){
     // could be a value or add/sub mult/div 
     if(assStmt->children[1]->simpleAddStmt == 1){
         printSimpleAdd(assStmt->children[1]);
+    }
+    else if(assStmt->children[1]->callStmt == 1){
+            printf("\n");
+            printCallStmt(assStmt->children[1]);
+            printf("        ]");
     }
     else
         printf(" [%s]", assStmt->children[1]->ID);
@@ -652,6 +864,40 @@ void printRetStmt(Node *retStmt){
     printf("]\n");
 }
 
+void some_syn_checks(int imax){
+    int paren_count   = 0;
+    int bracket_count = 0;
+    int brace_count   = 0;
+
+    int i;
+    for(i=0; i<imax; i++){
+        if(tokens[i].ID[0] == S_OPEN_PARENTHESIS)
+            paren_count++;
+        else if(tokens[i].ID[0] == S_CLOSE_PARENTHESIS)
+            paren_count--;
+        else if(tokens[i].ID[0] == S_CLOSE_PARENTHESIS)
+            paren_count--;
+        else if(tokens[i].ID[0] == S_OPENING_BRACE)
+            brace_count++;
+        else if(tokens[i].ID[0] == S_CLOSING_BRACE)
+            brace_count--;
+        else if(tokens[i].ID[0] == S_OPENING_BRACKET)
+            bracket_count++;
+        else if(tokens[i].ID[0] == S_CLOSING_BRACKET)
+            bracket_count--;
+    }
+
+    if(paren_count != 0)
+        errorExit("Uneven parens");
+    
+    if(brace_count != 0)
+        errorExit("Uneven braces");
+    
+    if(bracket_count != 0)
+        errorExit("Uneven brackets");
+
+}
+
 int main(int argc, char *argv[]){
 
     if(argc < 3) {
@@ -685,6 +931,8 @@ int main(int argc, char *argv[]){
     while(tokens[i].lineNumber != -1){
         tokens[++i] = getToken(ifp);
     }
+
+    some_syn_checks(i);
 
     int j = 0;
 
