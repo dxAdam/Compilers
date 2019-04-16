@@ -1,0 +1,115 @@
+#./test.sh testcases_sem/test-fundecl-retn.in
+#./test.sh testcases_sem/test-keyword-as-id.in
+./test.sh testcases_sem/test-sema-array-out-of-bounds-lower.in
+#./test.sh testcases_sem/test-program-simple.in
+
+
+#./test.sh testcases_sem/test-sema-array-out-of-bounds-upper.in
+#./test.sh testcases_sem/test-sema-array-subscript-non-array.in
+#./test.sh testcases_sem/test-sema-builtin-bad-array-param.in
+echo "pass 1"
+#./test.sh testcases_sem/test-sema-builtin-bad-param-count.in
+#./test.sh testcases_sem/test-sema-builtin-bad-return-type.in
+#./test.sh testcases_sem/test-sema-builtin.in
+#./test.sh testcases_sem/test-sema-call-argcount-match.in
+#./test.sh testcases_sem/test-sema-call-argcount-too-few.in
+#./test.sh testcases_sem/test-sema-call-argcount-too-many.in
+#./test.sh testcases_sem/test-sema-call-missing-paren.in
+#echo "pass 2"
+#./test.sh testcases_sem/test-sema-fun-in-assignment.in
+#./test.sh testcases_sem/test-sema-fun-in-boolean-test.in
+#./test.sh testcases_sem/test-sema-fun-redecl-as-local.in
+#./test.sh testcases_sem/test-sema-fun-redecl-as-param.in
+#./test.sh testcases_sem/test-sema-fun-redecl-as-var.in
+#./test.sh testcases_sem/test-sema-fun-redecl-but-overload.in
+#./test.sh testcases_sem/test-sema-fun-redecl.in
+#echo "pass 3"
+#./test.sh testcases_sem/test-sema-fun-use-before-decl.in
+#./test.sh testcases_sem/test-sema-local-redecl-as-inner-local.in
+#./test.sh testcases_sem/test-sema-local-redecl-as-local.in
+#./test.sh testcases_sem/test-sema-main-last-decl-has-param.in
+#./test.sh testcases_sem/test-sema-main-last-decl-name-main.in
+#./test.sh testcases_sem/test-sema-main-last-decl-no-void.in
+#./test.sh testcases_sem/test-sema-main-last-decl-ok.in
+#echo "pass 4"
+#./test.sh testcases_sem/test-sema-main-last-decl-var-decl.in
+#./test.sh testcases_sem/test-sema-no-decl.in
+#./test.sh testcases_sem/test-sema-param-array-in-expr.in
+#./test.sh testcases_sem/test-sema-param-array-test1.in
+#./test.sh testcases_sem/test-sema-param-array-test2.in
+#./test.sh testcases_sem/test-sema-param-redecl-as-inner-local.in
+#./test.sh testcases_sem/test-sema-param-redecl-as-local.in
+#./test.sh testcases_sem/test-sema-param-redecl-as-param.in
+#echo "pass 5"
+#./test.sh testcases_sem/test-sema-recursive-fun.in
+#./test.sh testcases_sem/test-sema-stmt-array.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-array-to-array.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-array-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-array-to-void.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-int-call-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-int-fun-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-int-to-array.in
+#echo "pass 6"
+#./test.sh testcases_sem/test-sema-typecheck-assign-int-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-int-to-void.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-void-to-array.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-void-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-assign-void-to-void.in
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-array-to-array.in
+#echo "pass 7"
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-array-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-array-to-void.in
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-fun-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-int-to-array.in
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-int-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-int-to-void.in
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-void-to-array.in
+#echo "pass 8"
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-void-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-binary-expr-void-to-void.in
+#./test.sh testcases_sem/test-sema-typecheck-call-void-arg.in
+#./test.sh testcases_sem/test-sema-typecheck-iterationstmt-expr-array.in
+#./test.sh testcases_sem/test-sema-typecheck-iterationstmt-expr-fun-call.in
+#./test.sh testcases_sem/test-sema-typecheck-iterationstmt-expr-int.in
+#echo "pass 9"
+#./test.sh testcases_sem/test-sema-typecheck-iterationstmt-expr-void.in
+#./test.sh testcases_sem/test-sema-typecheck-param-array-to-array.in
+#./test.sh testcases_sem/test-sema-typecheck-param-array-to-array-subscript.in
+#./test.sh testcases_sem/test-sema-typecheck-param-array-to-int.in
+#./test.sh testcases_sem/test-sema-typecheck-param-array-to-void.in
+#./test.sh testcases_sem/test-sema-typecheck-param-int-to-array.in
+#./test.sh testcases_sem/test-sema-typecheck-param-int-to-array-subscript.in
+#./test.sh testcases_sem/test-sema-typecheck-param-int-to-int.in
+#echo "pass 10"
+#./test.sh testcases_sem/test-sema-typecheck-param-int-to-void.in
+#./test.sh testcases_sem/test-sema-typecheck-returnstmt-array-in-int.in
+#./test.sh testcases_sem/test-sema-typecheck-returnstmt-array-in-void.in
+#./test.sh testcases_sem/test-sema-typecheck-returnstmt-empty-in-int.in
+#./test.sh testcases_sem/test-sema-typecheck-returnstmt-empty-in-void.in
+#./test.sh testcases_sem/test-sema-typecheck-returnstmt-int-in-int.in
+#./test.sh testcases_sem/test-sema-typecheck-returnstmt-int-in-void.in
+#./test.sh testcases_sem/test-sema-typecheck-returnstmt-void-in-int.in
+#echo "pass 11"
+#./test.sh testcases_sem/test-sema-typecheck-returnstmt-void-in-void.in
+#./test.sh testcases_sem/test-sema-typecheck-selectionstmt-expr-array.in
+#./test.sh testcases_sem/test-sema-typecheck-selectionstmt-expr-int.in
+#./test.sh testcases_sem/test-sema-typecheck-selectionstmt-expr-void.in
+#./test.sh testcases_sem/test-sema-typecheck-var-index-array.in
+#./test.sh testcases_sem/test-sema-typecheck-var-index-int.in
+#./test.sh testcases_sem/test-sema-typecheck-var-index-void.in
+#echo "pass 12"
+#./test.sh testcases_sem/test-sema-var-in-call.in
+#./test.sh testcases_sem/test-sema-var-redecl-as-fun.in
+#./test.sh testcases_sem/test-sema-var-redecl-as-local.in
+#./test.sh testcases_sem/test-sema-var-redecl-as-param.in
+#./test.sh testcases_sem/test-sema-var-redecl-as-var.in
+#./test.sh testcases_sem/test-sema-var-use-before-decl.in
+#./test.sh testcases_sem/test-sema-var-use-outside-of-fun-body.in
+#echo "pass 13"
+#./test.sh testcases_sem/test-sema-var-use-outside-of-inner-scope.in
+#./test.sh testcases_sem/test-sema-var-use-outside-of-scope.in
+#./test.sh testcases_sem/test-sema-void-param-type.in
+#./test.sh testcases_sem/test-sema-void-var-type.in
+#./test.sh testcases_sem/test-vardecl-array-2d.in
+#./test.sh testcases_sem/test-var-simple.in
+#./test.sh testcases_sem/test-var-subscript-2d.

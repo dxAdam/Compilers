@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-I.
 
-parser: parser.o lex.o tree.o
-	$(CC) -o parser parser.o lex.o tree.o
+parser: symtable.o lex.o tree.o parser.o
+	$(CC) -o parser symtable.o lex.o tree.o parser.o
 
 clean:
 	rm *.o parser

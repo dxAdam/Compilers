@@ -1,0 +1,15 @@
+void foo(void)
+{
+}
+
+void baz(int x)
+{
+}
+
+void bar(int x, int y)
+{
+}
+
+void main(void)
+{
+}

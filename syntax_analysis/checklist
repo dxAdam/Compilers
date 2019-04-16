@@ -1,0 +1,56 @@
+./test.sh test-cases-syntax/test-declist-simple.in
+./test.sh test-cases-syntax/test-returnstmt-simple.in
+./test.sh test-cases-syntax/test-exprstmt-no-semicolon.in
+./test.sh test-cases-syntax/test-locdecl-simple.in
+./test.sh test-cases-syntax/test-fundecl-not-id2.in
+./test.sh test-cases-syntax/test-returnstmt-simple.in
+./test.sh test-cases-syntax/test-declist-simple.in
+./test.sh test-cases-syntax/test-call-bad-arg-expr2.in
+echo "pass 1"
+./test.sh test-cases-syntax/test-iterationstmt-complex.in
+./test.sh test-cases-syntax/test-program-example.in
+###./test.sh test-cases-syntax/test-expr-assign-assign.in
+###./test.sh test-cases-syntax/test-program-sum.in
+./test.sh test-cases-syntax/test-param-simple.in
+./test.sh test-cases-syntax/test-call-simple.in
+###./test.sh test-cases-syntax/test-program-selection-sort.in
+echo "pass 2"
+./test.sh test-cases-syntax/test-expr-relops.in
+./test.sh test-cases-syntax/test-iterationstmt-simple.in
+./test.sh test-cases-syntax/test-var-subscript-noid.in
+./test.sh test-cases-syntax/test-expr-parens.in
+./test.sh test-cases-syntax/test-vardecl-simple.in
+./test.sh test-cases-syntax/test-selectionstmt-complex.in
+./test.sh test-cases-syntax/test-var-expr.in
+echo "pass 3"
+./test.sh test-cases-syntax/test-var-subscript.in
+./test.sh test-cases-syntax/test-expr-relop-3ops.in
+./test.sh test-cases-syntax/test-selectionstmt-else-if.in
+./test.sh test-cases-syntax/test-stmtlist-missing-semicolon.in
+./test.sh test-cases-syntax/test-selectionstmt-dangling-else.in
+./test.sh test-cases-syntax/test-expr-unary.in
+#./test.sh test-cases-syntax/test-expr-subscript2.in
+echo "pass 4"
+#./test.sh test-cases-syntax/test-program-gcd.in
+#./test.sh test-cases-syntax/test-fundecl-params-many.in
+#./test.sh test-cases-syntax/test-expr-relop-compound.in
+#./test.sh test-cases-syntax/test-fundecl-params-empty-int.in
+#./test.sh test-cases-syntax/test-expr-assign-relop.in
+#./test.sh test-cases-syntax/test-fundecl-not-id.in
+#./test.sh test-cases-syntax/test-expr-assign-simple.in
+#./test.sh test-cases-syntax/test-selectionstmt-simple.in
+#./test.sh test-cases-syntax/test-vardecl-array.in
+#./test.sh test-cases-syntax/test-expr-associativity.in
+#./test.sh test-cases-syntax/test-param-many.in
+#./test.sh test-cases-syntax/test-expr-precedence.in
+#./test.sh test-cases-syntax/test-param-array.in
+#./test.sh test-cases-syntax/test-statement-bad-lookahead.in
+#./test.sh test-cases-syntax/test-stmtlist-simple.in
+#./test.sh test-cases-syntax/test-vardecl-size-nosemicolon.in
+#./test.sh test-cases-syntax/
+#./test.sh test-cases-syntax/
+#./test.sh test-cases-syntax/
+
+ 
+
+

@@ -8,6 +8,7 @@
             ./lex input.c output.txt
 */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>

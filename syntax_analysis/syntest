@@ -1,0 +1,68 @@
+./test.sh test/test-declist-simple.in
+./test.sh test/test-returnstmt-simple.in
+./test.sh test/test-exprstmt-no-semicolon.in
+./test.sh test/test-locdecl-simple.in
+./test.sh test/test-fundecl-not-id2.in
+./test.sh test/test-returnstmt-simple.in
+echo "pass 1"
+./test.sh test/test-call-bad-arg-expr2.in
+./test.sh test/test-param-simple.in
+echo "pass 2"
+./test.sh test/test-var-subscript-noid.in
+./test.sh test/test-expr-parens.in
+./test.sh test/test-vardecl-simple.in
+./test.sh test/test-var-expr.in
+echo "pass 3"
+./test.sh test/test-declist-simple.in
+./test.sh test/test-expr-relops.in
+
+./test.sh test/test-var-subscript.in
+./test.sh test/test-stmtlist-missing-semicolon.in
+./test.sh test/test-expr-unary.in
+./test.sh test/test-expr-subscript2.in
+echo "pass 4"
+./test.sh test/test-fundecl-params-many.in
+./test.sh test/test-fundecl-params-empty-int.in
+./test.sh test/test-expr-assign-relop.in
+./test.sh test/test-fundecl-not-id.in
+echo "pass 5"
+./test.sh test/test-vardecl-array.in
+./test.sh test/test-param-many.in
+./test.sh test/test-param-array.in
+./test.sh test/test-statement-bad-lookahead.in
+./test.sh test/test-stmtlist-simple.in
+./test.sh test/test-vardecl-size-nosemicolon.in
+./test.sh test/test-call-simple.in
+echo "pass 6"
+./test.sh test/test-selectionstmt-simple.in
+./test.sh test/test-iterationstmt-simple.in
+./test.sh test/test-expr-assign-to-expr.in
+./test.sh test/test-vardecl-size-isempty.in
+
+echo "pass 7"
+./test.sh test/test-program-example.in
+./test.sh test/test-expr-assign-simple.in
+./test.sh test/test-iterationstmt-complex.in
+./test.sh test/test-expr-associativity.in
+./test.sh test/test-expr-precedence.in
+./test.sh test/test-fundecl-params-no-comma-but-sym.in
+./test.sh test/test-expr-relop-compound.in
+./test.sh test/test-expr-relop-3ops.in
+
+
+
+#./test.sh test/test-program-selection-sort.in
+#./test.sh test/test-selectionstmt-complex.in
+#./test.sh test/test-selectionstmt-bad-stmt1.in
+#./test.sh test/test-program-sum.in
+./test.sh test/test-vardecl-size-isid.in
+./test.sh test/test-vardecl-size-istrash.in
+./test.sh test/test-iterationstmt-bad-stmt1.in
+#./test.sh test/test-param-bracket-not-empty.in
+##./test.sh test/test-expr-assign-assign.in
+##./test.sh test/test-program-gcd.in
+##./test.sh test/test-selectionstmt-dangling-else.in
+#./test.sh test/test-selectionstmt-else-if.in
+
+
+

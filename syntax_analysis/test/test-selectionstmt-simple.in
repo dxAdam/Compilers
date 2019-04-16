@@ -1,0 +1,10 @@
+void main(void)
+{
+    if(1 == 2)
+        3;
+    else
+        4;
+
+    if(5 == 6);
+        
+}
