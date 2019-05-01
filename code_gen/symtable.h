@@ -18,6 +18,7 @@ typedef struct symnode{
     char *scope;
     unsigned int type;
     int size;
+    int pos;
 } Symnode;
 
 int sym_assigncheck(char *id, int type, int size);
@@ -28,8 +29,10 @@ int getsym_type(char *id);
 int test_scope(int reqscope);
 int add_symtable(char *id, int type, int size);
 int print_symboltable();
+int sym_exists(char *id);
 
-
+int set_pos(char *id, int pos);
+int get_pos(char *id);
 
 int scope_in(char *id);
 char *scope_out();

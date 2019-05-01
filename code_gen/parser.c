@@ -34,6 +34,8 @@ token_t tokens[1000];
     utility functions 
 */
 
+int single_control_stmt = 0; //flag
+
 void errorExit(char *e, int i){ 
     // pass i == -1 if no token printout available\desired
     
@@ -186,7 +188,7 @@ int newFuncDeclNode(int i, Node *Tree){
     j = new_child_node(Tree);
     
     Tree->children[j]->funcDecl = 1;
-    Tree->children[j]->func = 1;
+    //Tree->children[j]->func = 1;
 
     i = handleFuncDecl(i, Tree->children[j]);
 
@@ -198,8 +200,11 @@ int newCompStmtNode(int i, Node *parent){
     if(DEBUG_FUNC_ENTER)printf("newCompStmtNode - token: %s\n", tokens[i].ID);
     
     // skip '{'
-    if(tokens[i++].ID[0] != S_OPENING_BRACE)
-        errorExit("18 newCompStmtNode - expected '{' but got", i);
+    if(tokens[i].ID[0] == S_OPENING_BRACE){
+        i++;
+        single_control_stmt = 1;
+    }
+        //errorExit("18 newCompStmtNode - expected '{' but got", i);
     
 
     int j = 0;
@@ -227,7 +232,7 @@ int newVarNode(int i, Node *parent){ // var with value following assumed
 
     // add variable ID to AST
     parent->children[j]->children[j2]->ID = tokens[i].ID;
-    parent->children[j]->children[j2]->SYM = 1;
+    parent->children[j]->children[j2]->varID = 1;
 
     sym_assigncheck(tokens[i].ID, INT, 1);
 
@@ -281,6 +286,7 @@ int newAssignNode(int i, Node *parent){
             j = new_child_node(parent);
             parent->children[j]->ID = "=";
             parent->children[j]->callAssign = 1;
+            parent->children[j]->callStmt = 1;
 
             i = newVarNode(i,parent->children[j]);
 
@@ -323,6 +329,9 @@ int newControlNode(int i, Node *compStmt){
 
     i = handleControlStmt(i, compStmt->children[j]);
 
+    //if(!strcmp(tokens[i].ID, "return"))
+    //    i--;
+
     if(DEBUG_FUNC_EXIT)printf("12 newControlNode exit - token: %s\n", tokens[i].ID);
     return i;
 }
@@ -341,6 +350,10 @@ int newCallNode(int i, Node *compStmt){
     // function name
     j = new_child_node(callNode);
     callNode->children[j]->ID = tokens[i].ID; // function ID
+
+    if(!strcmp(callNode->children[j]->ID, "input") || !strcmp(callNode->children[j]->ID, "output")){
+        add_symtable(callNode->children[j]->ID, FUNC, 1);
+    }
 
     // function args if not void
     if(strcmp(tokens[i].ID, "void")){
@@ -535,6 +548,7 @@ Node * factor(int *index){
             node->right = get_zeroed_node();
             node->right->ID = tokens[i].ID; //variable ID
             node->left = NULL;
+            node->varID = 1;
 
             char *tok = tokens[i].ID;
 
@@ -570,6 +584,7 @@ Node * get_op_node(Node *left, Node *right, char *op){
     opNode->ID = op;
     opNode->op = 1;
     opNode->left = left;
+    opNode->left->leftNode = 1;
     opNode->right = right;
 
     if(left->num == 1 && right->num == 1){
@@ -650,6 +665,7 @@ int handleVarDecl(int i, Node *parent){
     // add variable ID
     j = new_child_node(parent);
     parent->children[j]->ID = tokens[i].ID;
+    parent->children[j]->varID = 1;
 
     if(DEBUG)printf("handleVarDecl - put %s in node\n", tokens[i].ID);
 
@@ -697,6 +713,7 @@ int handleFuncDecl(int i, Node *funcNode){
     // add function ID
     j = new_child_node(funcNode);
     funcNode->children[j]->ID = tokens[i].ID;  
+    funcNode->children[j]->funcID = 1;
 
     // add to sym table
     add_symtable(tokens[i].ID, FUNC, 1);
@@ -754,13 +771,21 @@ int handleCallArgs(int i, Node *argNode){
         //    i++; //skip parens for now
 
         // token should be ID or NUM, comma ','
-        if(tokens[i].type == T_NUM || tokens[i].type == T_ID || tokens[i].ID[0] == S_OPEN_PARENTHESIS){
+        if(isFunction(i)){
+            i = newCallNode(i, argNode);
+        }
+        else if(tokens[i].type == T_NUM || tokens[i].type == T_ID || tokens[i].ID[0] == S_OPEN_PARENTHESIS){
             i = newOpNode(i, argNode);
+            argNode->argNode = 1;
+        }
+        else if(tokens[i].ID[0] == S_CLOSE_PARENTHESIS){
+            argNode = 0;
         }
         else if(tokens[i].type == T_SYM){
             errorExit("handleCallArgs - unexpected symbol", i);
             // TO DO handle complex statement
-        }         
+        }   
+ 
         else errorExit("handleCallArgs - not ID or NUM", i);
     
         while(tokens[i].ID[0] == S_OPEN_PARENTHESIS || tokens[i].ID[0] == S_CLOSE_PARENTHESIS)
@@ -824,6 +849,9 @@ int handleControlStmt(int i, Node *controlNode){
     // current token should be '{' signaling the start of a compound statement
     if(tokens[i].ID[0] == S_OPENING_BRACE){
         i = newCompStmtNode(i, controlNode);       
+    }
+    else if(!strcmp(tokens[i].ID, "return")){
+        i = newCompStmtNode(i--, controlNode);
     }
     else{
         if(tokens[i].type == T_NUM)
@@ -894,6 +922,11 @@ int handleCompStmt(int i, Node *compStmt){
             }
             else if(!strcmp(tokens[i].ID, "return")){
                 i = newReturnNode(i, compStmt);
+                if(single_control_stmt)
+                {
+                    single_control_stmt = 0;
+                    return i-1;
+                }
             }
             else if(!strcmp(tokens[i].ID, "else")){
                 i = handleCompStmt(i+1, compStmt);

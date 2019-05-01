@@ -28,7 +28,7 @@ char * getsym_scope(char *id){
 
     int i = 0;
     while(i < st_top){
-        if(id == ST[i].symbol)
+        if(!strcmp(id,ST[i].symbol))
             return ST[i].scope;
         i++;
     }
@@ -38,9 +38,11 @@ char * getsym_scope(char *id){
 
 int getsym_type(char *id){
     int i = 0;
-    while(i < MAXSCOPELEVEL){
-        if(id == ST[i].symbol)
+    while(i < st_top){
+        if(!strcmp(id,ST[i].symbol)){
             return ST[i].type;
+        }
+        i++;
     }
 
     return -1;
@@ -51,6 +53,7 @@ int getsym_size(char *id){
     while(i < MAXSCOPELEVEL){
         if(id == ST[i].symbol)
             return ST[i].size;
+        i++;
     }
 
     return -1;
@@ -60,6 +63,9 @@ int add_symtable(char *id, int type, int size){
     
     if(DEBUG)printf("ST id: %s\n", id);
     
+    if(getsym_type(id) != -1)
+        return 1;
+
     
     if(size < 0){
         printf("SEMANTIC ERROR: array size less than zero\n\tsize: %d\n", size);
@@ -81,6 +87,7 @@ int add_symtable(char *id, int type, int size){
     ST[st_top].type = type;
     ST[st_top].scope = scopestack[scope_top];
     ST[st_top].size = size;
+    ST[st_top].pos = 0;
     st_top++;
 
     return 1;
@@ -91,6 +98,30 @@ int sym_exists(char *id){
         return 1;
 
     return 0;
+}
+
+int set_pos(char *id, int pos){
+    
+    int i = 0;
+    while(i < st_top){
+        if(!strcmp(id,ST[i].symbol)){
+            ST[i].pos = pos;
+            return 1;
+        }
+        i++;
+    }
+
+    return -1;
+}
+
+int get_pos(char *id){
+        int i = 0;
+        while(i < st_top){
+        if(!strcmp(id,ST[i].symbol)){
+            return ST[i].pos;
+        }
+        i++;
+    }
 }
 
 // checks if sym is safe to use in assignment
@@ -181,6 +212,18 @@ int test_scope(int reqscope){
     else
         return 0;
 }
+
+int print_scopeVars(FILE* opf, char* scope){
+    int i = 0;
+    
+    while(i < st_top){
+        if(!strcmp(ST[i].scope, scope) && ST[i].type < 3){
+            fprintf(opf, "%s: .space %d\n", ST[i].symbol, ST[i].size*4);
+        }
+        i++;
+    }
+}
+
 
 int maindriver(){
 

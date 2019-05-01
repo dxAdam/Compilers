@@ -12,11 +12,16 @@ typedef struct node {
     // flags
     unsigned int root              : 1;
     unsigned int funcDecl          : 1;
+    unsigned int funcID            : 1;
     unsigned int varDecl           : 1;
     unsigned int func              : 1;
     unsigned int SYM               : 1;
+    unsigned int varID             : 1;
     unsigned int num               : 1;
     unsigned int callAssign        : 1;
+    unsigned int call              : 1;
+    unsigned int arg               : 1;
+    unsigned int argNode           : 1;
     unsigned int returnStmt        : 1;
     unsigned int controlStmt       : 1; 
     unsigned int compStmt          : 1;  
@@ -30,6 +35,7 @@ typedef struct node {
     unsigned int factor            : 1;
     unsigned int param             : 1;
     unsigned int params            : 1;
+    unsigned int leftNode          : 1;
     
     // opNodes calculate when created in get_op_node()
     int base10val;
