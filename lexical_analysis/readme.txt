@@ -1,6 +1,7 @@
 Program: lex
     performs a lexical analysis of an input file and generates a list of tokens     as an output file.
 
+
 Usage: 
     make
     ./lex <input-file> <output-file>
@@ -13,9 +14,9 @@ Example:
        int a;
        a = 7;
 
-    the output will be:   
+    the output will be:              
 
-       (1,KEY,"int")
+       (1,KEY,"int")             
        (1,ID,"a")
        (1,SYM,";")
        (2,ID,"a")
@@ -23,14 +24,8 @@ Example:
        (2,NUM,"7")
        (2,SYM,";")
 
-  
-Format:
 
-       (line number, type, id)
-
-
-
-
+   format: (linenumber,type,id)   
 
 Contents:
 
