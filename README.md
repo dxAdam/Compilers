@@ -1,14 +1,22 @@
 # Compilers
 
 ## lexical_analysis
-lexical analysis of a C-minus (minimal C-like language) program
+Lexical analysis of a C-minus program. C-minus is a minimal C-like
+language (see lexical_analysis/CminusSpec.pdf). 
 
-accepts C-minus file as input and outputs a list of tokens
+The program accepts a C-minus file as input and outputs a list of tokens.
 
-see lexical_analysis/readme.txt for more information  
+See lexical_analysis/readme.txt
   
 ## syntax_analysis
-syntax analysis of a C-minus program
- 
+Parsing of lexical analysis token list for semantic and syntactic errors.
 
+The program accepts a C-minus file as input and outputs a parse tree upon
+successful parsing.
 
+See syntax_analysis/readme.txt
+  
+## code_gen
+Code generation from syntax analysis parse tree.  
+
+See code_gen/readme.txt
