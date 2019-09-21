@@ -25,7 +25,7 @@ Example:
        (2,SYM,";")
 
 
-   format: (linenumber,type,id)   
+    where the format is (linenumber,type,id)   
 
 Contents:
 
