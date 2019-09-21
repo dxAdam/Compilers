@@ -1,5 +1,5 @@
 Program: codegen
-    Generates x86 assembly code from the parse tree generated in syntax
+    Generates MIPS assembly code from the parse tree generated in syntax
     analysis. Codegen runs our parser from syntax analysis modified to be a
     function that returns a parse tree. 
 
