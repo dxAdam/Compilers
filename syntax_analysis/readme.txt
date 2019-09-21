@@ -57,7 +57,8 @@ Contents:
     lex.h            - lex header file
 
     output           - the output generated when
-                           ./parser testinputs_syn/test-program-simple.in output                       is ran
+                           ./parser testinputs_syn/test-program-simple.in output
+                       is ran
 
     parser.c         - main c file for parser program
 
