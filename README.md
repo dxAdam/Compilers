@@ -17,6 +17,8 @@ successful parsing.
 See syntax_analysis/readme.txt
   
 ## code_gen
-Code generation from syntax analysis parse tree.  
+Code generation from syntax analysis parse tree.
+
+The program accepts a C-minus file as input and outputs x86 assembly code.
 
 See code_gen/readme.txt
