@@ -1,6 +1,6 @@
 # Script:
 #     
-#    compares the output of lex to the output of the reference compiler (lexico)
+#    compares the output of lex to the output of the reference compiler (lexico
 #
 #
 # Usage:
