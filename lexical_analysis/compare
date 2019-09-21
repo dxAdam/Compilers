@@ -1,3 +1,0 @@
-./lex $1 output
-./lexico $1 output.txt
-diff output output.txt
