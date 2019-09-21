@@ -1,8 +1,0 @@
-int pad1[20];
-int arr[3];
-int pad2[20];
-
-void main(void)
-{
-    output(arr[0 - 1]);
-}

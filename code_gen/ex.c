@@ -1,1 +1,0 @@
-void main(void) { output(4+5); }
