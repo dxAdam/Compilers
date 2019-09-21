@@ -32,7 +32,7 @@ Contents:
 
     testinputs       - a collection of test input files
 
-    Makefile         - run 'make' to compile the project
+    Makefile         - run 'make' to build lex
 
     compare.sh       - used to compare lex's output to reference compiler's
 
@@ -42,8 +42,8 @@ Contents:
 
     lexico           - reference compiler (output is correct)
 
-    output           - the output produced when
-			       ./lex testinputs/main.c output
+    output           - the output generated when
+		           ./lex testinputs/main.c output
 	               is run
 
     submitted.tar.gz - version that was submitted for grading
