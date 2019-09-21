@@ -32,6 +32,8 @@ Contents:
 
     testinputs       - a collection of test input files
 
+    CminusSpec.pdf   - the specification for the C minus programming language
+    
     Makefile         - run 'make' to build lex
 
     compare.sh       - used to compare lex's output to reference compiler's

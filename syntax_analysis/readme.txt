@@ -48,6 +48,8 @@ Contents:
 
     testinputs_syn   - syntactic test inputs
 
+    CminusSpec.pdf   - the specification for the C minus programming language
+    
     Makefile         - run 'make" to build parser
 
     compare.sh       - compares parse's output to the reference parser's
