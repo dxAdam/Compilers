@@ -1,1 +1,0 @@
-./sintatico $1 paroutput && cat paroutput
